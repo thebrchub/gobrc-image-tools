@@ -1,0 +1,128 @@
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Manrope", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  color: #242323;
+  background: #F9F7F3;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+::selection {
+  color: #242323;
+  background: #FFC5AE;
+}
+
+:focus-visible {
+  outline: 2px solid #F36B45;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* GoBRC Image Tools — custom scrollbar */
+:root {
+  scrollbar-color: #D9B6A5 #F9F7F3;
+  scrollbar-width: thin;
+}
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F9F7F3;
+  border-left: 1px solid #E9E1D8;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D9B6A5;
+  border: 2px solid #F9F7F3;
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #D9512B;
+}
+
+::-webkit-scrollbar-corner {
+  background: #F9F7F3;
+}
+
+/* Subtle scrollbar for independently scrollable panels */
+.panel-scrollbar {
+  scrollbar-color: #D9B6A5 #FCFAF6;
+  scrollbar-width: thin;
+}
+
+.panel-scrollbar::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+.panel-scrollbar::-webkit-scrollbar-track {
+  background: #FCFAF6;
+  border-left: 1px solid #E9E1D8;
+}
+
+.panel-scrollbar::-webkit-scrollbar-thumb {
+  background: #D9B6A5;
+  border: 1px solid #FCFAF6;
+  border-radius: 0;
+}
+
+.panel-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #D9512B;
+}
