@@ -5,17 +5,23 @@ import { ImagePlus, Upload, FileImage } from 'lucide-react';
 interface FileDropzoneProps {
   onFile: (file: File) => void;
   disabled?: boolean;
+  accept?: string;
+  supportedFormats?: string;
 }
 
 export default function FileDropzone({
   onFile,
   disabled = false,
+  accept = 'image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp',
+  supportedFormats = 'JPG, PNG or WebP',
 }: FileDropzoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
   const handleFiles = (files: FileList | null) => {
-    if (files?.length) onFile(files[0]);
+    if (files?.length) {
+      onFile(files[0]);
+    }
   };
 
   return (
@@ -39,7 +45,7 @@ export default function FileDropzone({
       <input
         ref={inputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+        accept={accept}
         className="sr-only"
         disabled={disabled}
         onChange={(event) => {
@@ -71,7 +77,7 @@ export default function FileDropzone({
       </button>
 
       <p className="mt-4 text-xs text-[#92887E]">
-        JPG, PNG or WebP · Maximum 20 MB
+        {supportedFormats} · Maximum 20 MB
       </p>
     </div>
   );

@@ -12,6 +12,7 @@ import {
   LoaderCircle,
   Info,
 } from 'lucide-react';
+import SEO from '../components/SEO';
 
 import FileDropzone from '../components/tools/FileDropzone';
 import ImagePreview from '../components/tools/ImagePreview';
@@ -263,6 +264,12 @@ export default function ImageResizer() {
   };
 
   return (
+    <>
+    <SEO
+  title="Free Image Resizer & Cropper Online | GoBRC"
+  description="Resize images to your desired dimensions and crop them for your needs. Preview your changes and download the result with GoBRC Image Tools."
+  path="/image-resizer"
+/>
     <main className="min-h-[70vh] bg-[#F9F7F3] px-5 py-10 sm:px-8 sm:py-14">
       <div className="mx-auto max-w-[1200px]">
         <Link
@@ -615,5 +622,6 @@ export default function ImageResizer() {
         </div>
       </div>
     </main>
+    </>
   );
 }

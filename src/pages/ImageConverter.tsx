@@ -9,12 +9,13 @@ import {
   RefreshCw,
   Info,
 } from 'lucide-react';
+import SEO from '../components/SEO';
 
 import FileDropzone from '../components/tools/FileDropzone';
 import ImagePreview from '../components/tools/ImagePreview';
 import DownloadPanel from '../components/tools/DownloadPanel';
 
-import { validateImageFile } from '../lib/image/fileValidation';
+import { validateConverterFile } from '../lib/image/fileValidation';
 import { loadImage } from '../lib/image/imageLoader';
 import {
   processImage,
@@ -41,6 +42,11 @@ const formats: {
     label: 'WebP',
     description: 'Modern format that often offers a good size-quality balance.',
   },
+  {
+  value: 'image/svg+xml',
+  label: 'SVG',
+  description: 'Vector format, or an SVG wrapper for raster images.',
+},
 ];
 
 export default function ImageConverter() {
@@ -57,7 +63,7 @@ export default function ImageConverter() {
   const [error, setError] = useState<string | null>(null);
 
   const handleFile = async (nextFile: File) => {
-    const validationError = validateImageFile(nextFile);
+    const validationError = validateConverterFile(nextFile);
 
     if (validationError) {
       setError(validationError);
@@ -169,9 +175,19 @@ export default function ImageConverter() {
         ? 'WebP'
         : null;
 
-  const isSameFormat = file?.type === format;
+ const isSameFormat = file
+  ? format === 'image/svg+xml'
+    ? file.type === 'image/svg+xml' || /\.svg$/i.test(file.name)
+    : file.type === format
+  : false;
 
   return (
+    <>
+    <SEO
+  title="Free Image Converter Online | GoBRC"
+  description="Convert images between JPG, PNG and WebP formats online. Choose your output format and download the converted image with GoBRC."
+  path="/image-converter"
+/>
     <main className="min-h-[70vh] bg-[#F9F7F3] px-5 py-10 sm:px-8 sm:py-14">
       <div className="mx-auto max-w-[1200px]">
         <Link
@@ -192,7 +208,7 @@ export default function ImageConverter() {
           </h1>
 
           <p className="mt-4 max-w-2xl text-sm leading-7 text-[#777067] sm:text-base">
-            Convert images between JPEG, PNG and WebP. Choose your output
+            Convert images between JPEG, PNG, WebP and SVG. Choose your output
             format, preview the converted image and download it when ready.
           </p>
         </header>
@@ -218,7 +234,12 @@ export default function ImageConverter() {
                 )}
               </div>
 
-              <FileDropzone onFile={handleFile} disabled={isLoading} />
+              <FileDropzone
+  onFile={handleFile}
+  disabled={isLoading}
+accept="image/jpeg,image/png,image/webp,image/gif,image/bmp,image/avif,image/x-icon,image/vnd.microsoft.icon,image/svg+xml,.jpg,.jpeg,.png,.webp,.gif,.bmp,.avif,.ico,.svg"
+supportedFormats="JPG, PNG, WebP, GIF, BMP, AVIF, ICO or SVG"
+/>
 
               {file && (
                 <div className="mt-4 flex items-start gap-3 border border-[#E9E1D8] bg-[#FCFAF6] p-3">
@@ -246,7 +267,7 @@ export default function ImageConverter() {
                 </h2>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 {formats.map((item) => {
                   const active = format === item.value;
 
@@ -418,5 +439,6 @@ export default function ImageConverter() {
         </div>
       </div>
     </main>
+    </>
   );
 }

@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -142,6 +143,12 @@ export default function ImageCompressor() {
   };
 
   return (
+<>
+  <SEO
+  title="Free Image Compressor Online | GoBRC"
+  description="Compress JPG, PNG and WebP images online. Adjust image quality, preview the result and download a smaller image."
+  path="/image-compressor"
+  />
     <main className="min-h-[70vh] bg-[#F9F7F3] px-5 py-10 sm:px-8 sm:py-14">
       <div className="mx-auto max-w-[1200px]">
         <Link
@@ -322,6 +329,7 @@ export default function ImageCompressor() {
           </div>
         </div>
       </div>
-    </main>
+    </main> 
+    </>   
   );
 }

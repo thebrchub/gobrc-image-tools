@@ -13,6 +13,8 @@ import {
   Sparkles,
   CircleCheck,
 } from 'lucide-react';
+import SeoContentSection from '../components/home/SeoContentSection';
+import SEO from '../components/SEO';
 
 const tools = [
   {
@@ -86,6 +88,12 @@ function ImageArtwork() {
 
 export default function Home() {
   return (
+    <>
+    <SEO
+  title="Free Online Image Tools | GoBRC"
+  description="Compress, convert and resize images online with GoBRC Image Tools. Create social media graphics using simple, browser-based image utilities."
+  path="/"
+/>
     <main>
       {/* Hero */}
       <section className="overflow-hidden border-b border-[#E9E1D8] bg-[#F5E8D8]">
@@ -249,7 +257,9 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="mt-8 flex flex-col gap-4 border border-[#E7D3C0] bg-[#F5E8D8] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
+          <SeoContentSection />
+
+          {/* <div className="mt-8 flex flex-col gap-4 border border-[#E7D3C0] bg-[#F5E8D8] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
             <div className="flex items-start gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center bg-[#F36B45] text-white">
                 <Sparkles size={19} />
@@ -263,13 +273,16 @@ export default function Home() {
                 </p>
               </div>
             </div>
+            
 
             <span className="w-fit border border-[#D8C7B6] bg-[#FAF3EA] px-3 py-2 text-xs font-bold text-[#8A4B35]">
               COMING LATER
             </span>
-          </div>
+          </div> */}
         </div>
+        
       </section>
     </main>
+    </>
   );
 }

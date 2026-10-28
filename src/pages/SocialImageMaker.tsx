@@ -11,6 +11,7 @@ import {
   SlidersHorizontal,
   Sparkles,
 } from 'lucide-react';
+import SEO from '../components/SEO';
 
 import FileDropzone from '../components/tools/FileDropzone';
 import DownloadPanel from '../components/tools/DownloadPanel';
@@ -287,6 +288,12 @@ export default function SocialImageMaker() {
     'border border-[#E9E1D8] bg-white p-4 sm:p-5';
 
   return (
+    <>
+    <SEO
+  title="Social Media Image Maker Online | GoBRC"
+  description="Create images for social media with GoBRC Image Tools. Choose a supported size, customize your design and prepare graphics for sharing."
+  path="/social-image-maker"
+/>
     <main className="min-h-[70vh] bg-[#F9F7F3] px-5 py-10 sm:px-8 sm:py-14">
       <div className="mx-auto max-w-[1200px]">
         <Link
@@ -768,5 +775,6 @@ export default function SocialImageMaker() {
         </div>
       </div>
     </main>
+    </>
   );
 }

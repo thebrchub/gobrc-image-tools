@@ -10,13 +10,62 @@ export interface ImageFileInfo {
   type: string;
 }
 
+const CONVERTER_INPUT_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'image/bmp',
+  'image/avif',
+  'image/x-icon',
+  'image/vnd.microsoft.icon',
+  'image/svg+xml',
+]);
+
+const CONVERTER_EXTENSIONS = [
+  '.jpg',
+  '.jpeg',
+  '.png',
+  '.webp',
+  '.gif',
+  '.bmp',
+  '.avif',
+  '.ico',
+  '.svg',
+];
+
+export function validateConverterFile(file: File): string | null {
+  if (file.size === 0) {
+    return 'This file is empty. Please choose another image.';
+  }
+
+  if (file.size > MAX_FILE_SIZE) {
+    return 'This file is larger than 20 MB. Please choose a smaller file.';
+  }
+
+  const mimeType = file.type.toLowerCase();
+  const fileName = file.name.toLowerCase();
+  const hasSupportedExtension = CONVERTER_EXTENSIONS.some((extension) =>
+    fileName.endsWith(extension),
+  );
+
+  if (
+    !CONVERTER_INPUT_TYPES.has(mimeType) &&
+    !hasSupportedExtension
+  ) {
+    return 'Unsupported format. Try JPG, PNG, WebP, GIF, BMP, AVIF, ICO or SVG.';
+  }
+
+  return null;
+}
+
 export function validateImageFile(file: File): string | null {
   if (!SUPPORTED_TYPES.includes(file.type)) {
     return 'Please choose a JPG, PNG or WebP image.';
   }
 
   if (file.size > MAX_FILE_SIZE) {
-    return 'This image is larger than 20 MB. Please choose a smaller file.';
+    return 'This image is larger than 20 MB. Please choose a smaller image.';
   }
 
   if (file.size === 0) {
@@ -34,13 +83,15 @@ export function formatFileSize(bytes: number): string {
 }
 
 export function getImageExtension(mimeType: string): string {
-  switch (mimeType) {
+  switch (mimeType.toLowerCase()) {
     case 'image/jpeg':
       return 'jpg';
     case 'image/png':
       return 'png';
     case 'image/webp':
       return 'webp';
+    case 'image/svg+xml':
+      return 'svg';
     default:
       return 'img';
   }

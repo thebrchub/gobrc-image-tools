@@ -7,10 +7,12 @@ import ImageCompressor from './pages/ImageCompressor';
 import ImageConverter from './pages/ImageConverter';
 import ImageResizer from './pages/ImageResizer';
 import SocialImageMaker from './pages/SocialImageMaker';
+import ScrollToTop from './components/layout/ScrollToTop';
 
 export default function App() {
   return (
     <BrowserRouter>
+    <ScrollToTop />
       <div className="flex min-h-screen flex-col bg-[#F7F8F4] font-sans text-[#202820]">
         <Header />
 
