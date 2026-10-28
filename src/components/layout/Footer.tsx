@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import {
   ArrowUpRight,
   ArrowRight,
-  Image,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
@@ -27,9 +26,7 @@ export default function Footer() {
               className="inline-flex items-center gap-3"
               aria-label="GoBRC Image Tools home"
             >
-              <span className="flex h-11 w-11 items-center justify-center border border-[#E9E1D8] bg-[#FFF0E9] text-[#D9512B]">
-                <Image size={21} strokeWidth={2} />
-              </span>
+              
 
               <span className="text-lg font-extrabold tracking-tight text-[#242323]">
                 GoBRC
