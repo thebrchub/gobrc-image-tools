@@ -7,6 +7,13 @@ export type OutputFormat =
   | 'image/webp'
   | 'image/svg+xml';
 
+export interface ResizeOptions {
+  enabled: boolean;
+  width: number;
+  height: number;
+  maintainAspectRatio: boolean;
+}
+
 export interface ProcessedImage {
   blob: Blob;
   width: number;
@@ -14,14 +21,49 @@ export interface ProcessedImage {
   format: OutputFormat;
 }
 
-function isSvgFile(file: File): boolean {
-  return (
-    file.type.toLowerCase() === 'image/svg+xml' ||
-    /\.svg$/i.test(file.name)
+const MAX_DIMENSION = 12000;
+
+function getOutputDimensions(
+  originalWidth: number,
+  originalHeight: number,
+  resize?: ResizeOptions,
+) {
+  if (!resize?.enabled) {
+    return { width: originalWidth, height: originalHeight };
+  }
+
+  const requestedWidth = Math.floor(resize.width);
+  const requestedHeight = Math.floor(resize.height);
+
+  if (
+    !Number.isFinite(requestedWidth) ||
+    !Number.isFinite(requestedHeight) ||
+    requestedWidth < 1 ||
+    requestedHeight < 1 ||
+    requestedWidth > MAX_DIMENSION ||
+    requestedHeight > MAX_DIMENSION
+  ) {
+    throw new Error(
+      `Width and height must be between 1 and ${MAX_DIMENSION} pixels.`,
+    );
+  }
+
+  if (!resize.maintainAspectRatio) {
+    return { width: requestedWidth, height: requestedHeight };
+  }
+
+  const scale = Math.min(
+    requestedWidth / originalWidth,
+    requestedHeight / originalHeight,
   );
+
+  return {
+    width: Math.max(1, Math.round(originalWidth * scale)),
+    height: Math.max(1, Math.round(originalHeight * scale)),
+  };
 }
 
-function readAsDataUrl(file: File): Promise<string> {
+function fileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
@@ -29,14 +71,11 @@ function readAsDataUrl(file: File): Promise<string> {
       if (typeof reader.result === 'string') {
         resolve(reader.result);
       } else {
-        reject(new Error('Could not read the image file.'));
+        reject(new Error('Could not read the image.'));
       }
     };
 
-    reader.onerror = () => {
-      reject(new Error('Could not read the image file.'));
-    };
-
+    reader.onerror = () => reject(new Error('Could not read the image.'));
     reader.readAsDataURL(file);
   });
 }
@@ -46,51 +85,49 @@ async function createSvgBlob(
   width: number,
   height: number,
 ): Promise<Blob> {
-  // SVG → SVG: preserve the original SVG instead of pretending
-  // that a conversion or vectorization has taken place.
-  if (isSvgFile(file)) {
-    return new Blob([file], { type: 'image/svg+xml' });
+  const isSvg =
+    file.type.toLowerCase() === 'image/svg+xml' ||
+    /\.svg$/i.test(file.name);
+
+  // SVG -> SVG is a pass-through, not a vectorization operation.
+  if (isSvg) {
+    return new Blob([await file.arrayBuffer()], {
+      type: 'image/svg+xml',
+    });
   }
 
-  // Raster → SVG: embed the original image inside an SVG container.
-  const dataUrl = await readAsDataUrl(file);
+  // Raster -> SVG embeds the original image inside an SVG document.
+  const dataUrl = await fileToDataUrl(file);
 
-  const svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg"
-     xmlns:xlink="http://www.w3.org/1999/xlink"
-     width="${width}"
-     height="${height}"
-     viewBox="0 0 ${width} ${height}">
-  <image
-    width="${width}"
-    height="${height}"
-    href="${dataUrl}"
-    xlink:href="${dataUrl}"
-    preserveAspectRatio="none"
-  />
-</svg>`;
+  const svg = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`,
+    `<image width="${width}" height="${height}" preserveAspectRatio="none" href="${dataUrl}" xlink:href="${dataUrl}"/>`,
+    '</svg>',
+  ].join('');
 
-  return new Blob([svg], {
-    type: 'image/svg+xml',
-  });
+  return new Blob([svg], { type: 'image/svg+xml' });
 }
 
 export async function processImage(
   file: File,
   quality: number,
   format: OutputFormat,
+  resize?: ResizeOptions,
 ): Promise<ProcessedImage> {
-  const { image, width, height } = await loadImage(file);
+  const { image, width: originalWidth, height: originalHeight } =
+    await loadImage(file);
+
+  const { width, height } = getOutputDimensions(
+    originalWidth,
+    originalHeight,
+    resize,
+  );
 
   if (format === 'image/svg+xml') {
     const blob = await createSvgBlob(file, width, height);
 
-    return {
-      blob,
-      width,
-      height,
-      format,
-    };
+    return { blob, width, height, format };
   }
 
   const canvas = document.createElement('canvas');
@@ -103,13 +140,14 @@ export async function processImage(
   canvas.width = width;
   canvas.height = height;
 
-  // JPEG does not support transparency, so use a white background.
   if (format === 'image/jpeg') {
     context.fillStyle = '#FFFFFF';
     context.fillRect(0, 0, width, height);
   }
 
   context.drawImage(image, 0, 0, width, height);
+
+  const normalizedQuality = Math.max(0, Math.min(1, quality));
 
   const blob = await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
@@ -121,7 +159,7 @@ export async function processImage(
         }
       },
       format,
-      format === 'image/png' ? undefined : quality,
+      format === 'image/png' ? undefined : normalizedQuality,
     );
   });
 
@@ -133,10 +171,5 @@ export async function processImage(
     );
   }
 
-  return {
-    blob,
-    width,
-    height,
-    format,
-  };
+  return { blob, width, height, format };
 }
